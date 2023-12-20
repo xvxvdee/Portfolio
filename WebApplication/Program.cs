@@ -1,6 +1,5 @@
 using MongoDB.Driver;
 using resumeController;
-using DBClient.DataBase;
 using MongoDB.Bson;
 using Microsoft.Extensions.Configuration;
 using DBService.DataBase;
@@ -13,35 +12,30 @@ var secretBuilder = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json")
             .AddUserSecrets<Program>();
 
-        var configuration = secretBuilder.Build();
-        string mongoDBConnectionURI = configuration["mongoDBConnectionUri"];
-        string mongoDBName = configuration["mongoDBDatabaseName"];
+var configuration = secretBuilder.Build();
+string mongoDBConnectionURI = configuration["mongoDBConnectionUri"];
+string mongoDBName = configuration["mongoDBDatabaseName"];
 
-        // Initialize Clients
-        MongoDBClient client = new(mongoDBConnectionURI, mongoDBName);
-        MongoClient dbClient = client.dbClient;
-        IMongoDatabase resume = dbClient.GetDatabase("Resume");
-        await client.CreateCollections();
-        EducationBuilder educationBuild= new EducationBuilder(resume);
-        await educationBuild.SetEducationCollection();
+// Initialize Clients
+// MongoDBService dbService = new(mongoDBConnectionURI, mongoDBName);
+// MongoClient dbClient = dbService.mongoClient;
+// IMongoDatabase resume = dbClient.GetDatabase(mongoDBName);
+// await dbService.CreateCollections();
+// await dbService.SetUpCollections();
 
+// Console.WriteLine("The list of collections in this database is: ");
 
-        Console.WriteLine("The list of collections in this database is: ");
+// var collections = resume.GetCollection<BsonDocument>("Education");
+// var edu = collections.Find(new BsonDocument()).ToList<BsonDocument>();
+// foreach (BsonDocument collection in edu)
+// {
+//     Console.WriteLine(collection);
+// }
 
-        var collections = resume.GetCollection<BsonDocument>("Education");
-        var edu = collections.Find(new BsonDocument()).ToList<BsonDocument>();
-        foreach (BsonDocument collection in edu)
-        {
-            Console.WriteLine(collection);
-        }
-       
- var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDBSettings")); // This line loads MongoDB settings from configuration
-builder.Services.AddSingleton<MongoDBService, MongoDBService>(); // This line registers MongoDBService with the loaded settings
-
-builder.Services.AddSingleton<ResumeController>();
 builder.Services.AddControllers();
 builder.Services.AddAuthorization();
 

@@ -2,34 +2,42 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using DBClient.DataBase;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using DBService.DataBase;
 using Microsoft.Extensions.Options;
+using EducationModel.Models;
 namespace resumeController.Controllers;
 
 [Route("deandra_spike-madden")]
 [ApiController]
 public class ResumeController : ControllerBase
 {
-    private readonly IMongoCollection<BsonDocument> educationCollection;
+    private readonly IMongoCollection<Education> educationCollection;
+    private MongoDBService dbService;
 
     public ResumeController(IOptions<MongoDBSettings> dbSettings)
     {
-        var mongoClient = new MongoClient(
-            dbSettings.Value.ConnectionString);
-        var db = mongoClient.GetDatabase(
-            dbSettings.Value.DatabaseName);
-        this.educationCollection = db.GetCollection<BsonDocument>("Education");
+        this.dbService = new(dbSettings);
     }
 
     [HttpGet]
     public ActionResult<string> HomePage()
     {
         return Ok("Welcome to my Resume!");
+    }
+
+    [HttpGet("setup")]
+    public async ActionResult Setup()
+    {   
+        try{
+        await this.dbService.SetUpCollections();
+        return Ok("Database is loaded.")
+        }catch(error e){
+            return BadRequest($"Inserts into the database failed: {e}");
+        }
     }
 
     [HttpGet("about")]
@@ -47,9 +55,8 @@ public class ResumeController : ControllerBase
     [HttpGet("resume/education")]
     public ActionResult<string> Education()
     {
-        var documents = this.educationCollection.Find(new BsonDocument()).ToList();
-        var json = documents.ToJson();
-        return Ok(json);
+        var response = this.dbService.GetEducation();
+        return Ok(response);
     }
 
     [HttpGet("resume/education/courses")]
@@ -61,7 +68,8 @@ public class ResumeController : ControllerBase
     [HttpGet("resume/experience")]
     public ActionResult<string> Experience()
     {
-        return Ok("List Experience");
+        var response = this.dbService.GetExperience();
+        return Ok(response);
     }
     [HttpGet("resume/projects")]
     public ActionResult<string> Projects()
