@@ -1,5 +1,4 @@
 using EducationModel.Models;
-using DBClient.DataBase;
 using MongoDB.Driver;
 
 using ExperienceModel.Models;
@@ -12,26 +11,25 @@ namespace educationBuilder.Collections;
 public class EducationBuilder
 {
     private readonly IMongoDatabase db;
-    private IMongoCollection<Education> education;
+    public IMongoCollection<Education> collection;
 
     public EducationBuilder(IMongoDatabase db)
     {
         this.db = db;
-        this.education = db.GetCollection<Education>("Education");
+        this.collection = db.GetCollection<Education>("Education");
 
-        var indexExists = education.Indexes.List().ToList().Any(idx => idx["name"] == "IdIndex");
+        var indexExists = collection.Indexes.List().ToList().Any(idx => idx["name"] == "IdIndex");
         if (!indexExists)
         {
             var indexKeys = Builders<Education>.IndexKeys.Ascending(a => a.Id);
             var indexOptions = new CreateIndexOptions { Unique = true, Name = "IdIndex" };
             var indexModel = new CreateIndexModel<Education>(indexKeys, indexOptions);
-            var indexName = education.Indexes.CreateOne(indexModel);
+            var indexName = collection.Indexes.CreateOne(indexModel);
         }
     }
 
     public async Task SetEducationCollection()
     {
-        var educationCollection = this.db.GetCollection<Education>("Education");
 
         Education university = new()
         {
@@ -57,7 +55,7 @@ public class EducationBuilder
 
         try
         {
-            await educationCollection.InsertManyAsync(new List<Education>([university, highSchool]));
+            await this.collection.InsertManyAsync(new List<Education>([university, highSchool]));
         }
         catch (MongoBulkWriteException)
         {
@@ -66,8 +64,6 @@ public class EducationBuilder
         catch (InvalidCastException e)
         {
             System.Console.WriteLine($"InvalidCastException: {e.Message}");
-                        System.Console.WriteLine($"Source: {e.Source}");
-
         }
     }
 }
