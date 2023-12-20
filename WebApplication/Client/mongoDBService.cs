@@ -1,22 +1,58 @@
 using MongoDB.Driver;
 using MongoDB.Bson;
 using Microsoft.Extensions.Options;
+using EducationModel.Models;
+using ExperienceModel.Models;
 
+using educationBuilder.Collections;
+using experienceBuilder.Collections;
 
 namespace DBService.DataBase;
-public class MongoDBService{
-private IMongoCollection<BsonDocument> educationCollection;
-
-    public MongoDBService(IOptions<MongoDBSettings> dbSettings){
-        var mongoClient = new MongoClient(
-            dbSettings.Value.ConnectionString);
-        var db = mongoClient.GetDatabase(
-            dbSettings.Value.DatabaseName);
-        this.educationCollection = db.GetCollection<BsonDocument>("Education");
+public class MongoDBService
+{
+    private EducationBuilder educationCollection;
+    private ExperienceBuilder experienceCollection;
+    public MongoClient mongoClient;
+    private IMongoDatabase db;
+    public MongoDBService(IOptions<MongoDBSettings> dbSettings)//string connectionURI, string dbName)
+    {
+        this.mongoClient = new MongoClient(dbSettings.Value.ConnectionString);
+        this.db = this.mongoClient.GetDatabase(dbSettings.Value.DatabaseName);
+        this.educationCollection = new(this.db);
+        this.experienceCollection =new(this.db);
+        //this.educationCollection = db.GetCollection<Education>("Education");
+    }
+    public async Task CreateCollections()
+    {
+        try
+        {
+            await db.CreateCollectionAsync("Projects");
+            await db.CreateCollectionAsync("Experience");
+            await db.CreateCollectionAsync("Education");
+            await db.CreateCollectionAsync("Volunteer");
+            await db.CreateCollectionAsync("Certificates");
+            await db.CreateCollectionAsync("Courses");
+        }
+        catch (MongoDB.Driver.MongoCommandException)
+        {
+            System.Console.WriteLine("Collections exist in database already.");
+        }
     }
 
-    public List<BsonDocument> GetEducation(){
-        var documents =  this.educationCollection.Find(new BsonDocument()).ToList<BsonDocument>();
-        return documents;
+    public async Task SetUpCollections(){
+        await this.educationCollection.SetEducationCollection();
+        await this.experienceCollection.SetExperienceCollection();
+    }
+    public string GetEducation()
+    {
+        var documents = this.educationCollection.collection.Find(new BsonDocument()).ToList();
+        var json = documents.ToJson();
+        return json;
+    }
+
+    public string GetExperience(){
+        var documents = this.experienceCollection.collection.Find(new BsonDocument()).ToList();
+        var json = documents.ToJson();
+        return json;
     }
 }
