@@ -9,13 +9,13 @@ using System.Text.Json.Serialization;
 
 namespace EducationModel.Models;
 public class Education {
-    public BsonInt32? Id {get; set;}
-    public BsonString? School {get; set;}
-    public BsonString? Program {get; set;}
-    public BsonString? Degree {get; set;}
+    public int? Id {get; set;}
+    public string? School {get; set;}
+    public string? Program {get; set;}
+    public string? Degree {get; set;}
     [DataType(DataType.Date)]
-    public BsonDateTime? StartDate {get; set;}
+    public DateTime? StartDate {get; set;}
     [DataType(DataType.Date)]
-    public BsonDateTime? EndDate {get; set;}
+    public DateTime? EndDate {get; set;}
     public List<BsonString>? Extracurriculars {get; set;}
 }

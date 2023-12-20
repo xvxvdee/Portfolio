@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ExperienceModel.Models;
 public class Experience {
+    public int? Id {get; set;}
     public string? Position {get; set;}
     public string? Company {get; set;}
     public string? Location {get; set;}
