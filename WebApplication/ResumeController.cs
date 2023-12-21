@@ -30,12 +30,15 @@ public class ResumeController : ControllerBase
     }
 
     [HttpGet("setup")]
-    public async ActionResult Setup()
-    {   
-        try{
-        await this.dbService.SetUpCollections();
-        return Ok("Database is loaded.")
-        }catch(error e){
+    public async Task<ActionResult<string>> Setup()
+    {
+        try
+        {
+            await this.dbService.SetUpCollections();
+            return Ok("Database is loaded.");
+        }
+        catch(Exception e)
+        {
             return BadRequest($"Inserts into the database failed: {e}");
         }
     }
@@ -74,7 +77,8 @@ public class ResumeController : ControllerBase
     [HttpGet("resume/projects")]
     public ActionResult<string> Projects()
     {
-        return Ok("List projects");
+        var response = this.dbService.GetProject();
+        return Ok(response);
     }
 
     [HttpGet("resume/certificates")]
