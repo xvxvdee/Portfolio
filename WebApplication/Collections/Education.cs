@@ -1,8 +1,6 @@
 using EducationModel.Models;
 using MongoDB.Driver;
 
-using ExperienceModel.Models;
-
 using MongoDB.Bson;
 using System.Globalization;
 
