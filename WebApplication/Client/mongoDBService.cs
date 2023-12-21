@@ -6,12 +6,15 @@ using ExperienceModel.Models;
 
 using educationBuilder.Collections;
 using experienceBuilder.Collections;
+using projectBuilder.Collections;
 
 namespace DBService.DataBase;
 public class MongoDBService
 {
     private EducationBuilder educationCollection;
     private ExperienceBuilder experienceCollection;
+    private ProjectBuilder projectCollection;
+
     public MongoClient mongoClient;
     private IMongoDatabase db;
     public MongoDBService(IOptions<MongoDBSettings> dbSettings)//string connectionURI, string dbName)
@@ -19,8 +22,8 @@ public class MongoDBService
         this.mongoClient = new MongoClient(dbSettings.Value.ConnectionString);
         this.db = this.mongoClient.GetDatabase(dbSettings.Value.DatabaseName);
         this.educationCollection = new(this.db);
-        this.experienceCollection =new(this.db);
-        //this.educationCollection = db.GetCollection<Education>("Education");
+        this.experienceCollection = new(this.db);
+        this.projectCollection = new(this.db);
     }
     public async Task CreateCollections()
     {
@@ -39,9 +42,11 @@ public class MongoDBService
         }
     }
 
-    public async Task SetUpCollections(){
+    public async Task SetUpCollections()
+    {
         await this.educationCollection.SetEducationCollection();
         await this.experienceCollection.SetExperienceCollection();
+        await this.projectCollection.SetProjectCollection();
     }
     public string GetEducation()
     {
@@ -49,9 +54,15 @@ public class MongoDBService
         var json = documents.ToJson();
         return json;
     }
-
-    public string GetExperience(){
+    public string GetExperience()
+    {
         var documents = this.experienceCollection.collection.Find(new BsonDocument()).ToList();
+        var json = documents.ToJson();
+        return json;
+    }
+    public string GetProject()
+    {
+        var documents = this.projectCollection.collection.Find(new BsonDocument()).ToList();
         var json = documents.ToJson();
         return json;
     }
