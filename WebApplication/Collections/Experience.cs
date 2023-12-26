@@ -82,10 +82,12 @@ public class ExperienceBuilder
         try
         {
             await this.collection.InsertManyAsync(new List<Experience>([LaunchPop, ExploreIntern, SWEIntern1, SWEIntern2]));
+            System.Console.WriteLine("Items have been ingested into the Experience Collection.");
+
         }
         catch (MongoBulkWriteException)
         {
-            System.Console.WriteLine("... Experience Collection is ready");
+            System.Console.WriteLine("... Experience Collection is set already.");
         }
         catch (InvalidCastException e)
         {
