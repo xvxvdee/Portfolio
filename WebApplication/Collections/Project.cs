@@ -13,7 +13,7 @@ public class ProjectBuilder
     public ProjectBuilder(IMongoDatabase db)
     {
         this.db = db;
-        this.collection = db.GetCollection<Project>("Project");
+        this.collection = db.GetCollection<Project>("Projects");
 
         var indexExists = collection.Indexes.List().ToList().Any(idx => idx["name"] == "IdIndex");
         if (!indexExists)
@@ -58,10 +58,12 @@ public class ProjectBuilder
         try
         {
             await this.collection.InsertManyAsync(new List<Project>([windows11BatteryAlert, activeRecallNotifier, transitDiscordBot]));
+            System.Console.WriteLine("Items have been ingested into the Projects Collection.");
+
         }
         catch (MongoBulkWriteException)
         {
-            System.Console.WriteLine("... Project Collection is ready");
+            System.Console.WriteLine("... Project Collection is set already.");
         }
         catch (InvalidCastException e)
         {
