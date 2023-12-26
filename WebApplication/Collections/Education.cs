@@ -20,7 +20,7 @@ public class EducationBuilder
         if (!indexExists)
         {
             var indexKeys = Builders<Education>.IndexKeys.Ascending(a => a.Id);
-            var indexOptions = new CreateIndexOptions { Unique = true, Name = "IdIndex" };
+            var indexOptions = new CreateIndexOptions {Name = "IdIndex" };
             var indexModel = new CreateIndexModel<Education>(indexKeys, indexOptions);
             var indexName = collection.Indexes.CreateOne(indexModel);
         }
@@ -54,10 +54,12 @@ public class EducationBuilder
         try
         {
             await this.collection.InsertManyAsync(new List<Education>([university, highSchool]));
+            System.Console.WriteLine("Items have been ingested into the Education Collection.");
+
         }
         catch (MongoBulkWriteException)
         {
-            System.Console.WriteLine("... Education Collection is ready");
+            System.Console.WriteLine("... Education Collection is set already.");
         }
         catch (InvalidCastException e)
         {
