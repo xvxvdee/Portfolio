@@ -37,7 +37,7 @@ public class ResumeController : ControllerBase
             await this.dbService.SetUpCollections();
             return Ok("Database is loaded.");
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             return BadRequest($"Inserts into the database failed: {e}");
         }
@@ -65,7 +65,8 @@ public class ResumeController : ControllerBase
     [HttpGet("resume/education/courses")]
     public ActionResult<string> Courses()
     {
-        return Ok("List course information");
+        var response = this.dbService.GetCourses();
+        return Ok(response);
     }
 
     [HttpGet("resume/experience")]
@@ -84,13 +85,15 @@ public class ResumeController : ControllerBase
     [HttpGet("resume/certificates")]
     public ActionResult<string> Certificates()
     {
-        return Ok("List certificates");
+        var response = this.dbService.GetCertificates();
+        return Ok(response);
     }
 
     [HttpGet("resume/volunteer")]
     public ActionResult<string> Volunteer()
     {
-        return Ok("List volunteer time");
+        var response = this.dbService.GetVolunteer();
+        return Ok(response);
     }
 
 }
