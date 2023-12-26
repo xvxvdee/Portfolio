@@ -7,6 +7,9 @@ using ExperienceModel.Models;
 using educationBuilder.Collections;
 using experienceBuilder.Collections;
 using projectBuilder.Collections;
+using courseBuilder.Collections;
+using volunteerBuilder.Collections;
+using certificateBuilder.Collections;
 
 namespace DBService.DataBase;
 public class MongoDBService
@@ -14,6 +17,9 @@ public class MongoDBService
     private EducationBuilder educationCollection;
     private ExperienceBuilder experienceCollection;
     private ProjectBuilder projectCollection;
+    private CourseBuilder coursesCollection;
+    private VolunteerBuilder volunterCollection;
+    private CertificateBuilder certficateCollection;
 
     public MongoClient mongoClient;
     private IMongoDatabase db;
@@ -24,6 +30,10 @@ public class MongoDBService
         this.educationCollection = new(this.db);
         this.experienceCollection = new(this.db);
         this.projectCollection = new(this.db);
+        this.coursesCollection = new(this.db);
+        this.volunterCollection = new(this.db);
+        this.certficateCollection = new(this.db);
+
     }
     public async Task CreateCollections()
     {
@@ -47,6 +57,10 @@ public class MongoDBService
         await this.educationCollection.SetEducationCollection();
         await this.experienceCollection.SetExperienceCollection();
         await this.projectCollection.SetProjectCollection();
+        await this.coursesCollection.SetCoursesCollection();
+        await this.volunterCollection.SetVolunteerCollection();
+        await this.certficateCollection.SetCertificateCollection();
+
     }
     public string GetEducation()
     {
@@ -63,6 +77,25 @@ public class MongoDBService
     public string GetProject()
     {
         var documents = this.projectCollection.collection.Find(new BsonDocument()).ToList();
+        var json = documents.ToJson();
+        return json;
+    }
+
+    public string GetCourses()
+    {
+        var documents = this.coursesCollection.collection.Find(new BsonDocument()).ToList();
+        var json = documents.ToJson();
+        return json;
+    }
+    public string GetVolunteer()
+    {
+        var documents = this.volunterCollection.collection.Find(new BsonDocument()).ToList();
+        var json = documents.ToJson();
+        return json;
+    }
+    public string GetCertificates()
+    {
+        var documents = this.certficateCollection.collection.Find(new BsonDocument()).ToList();
         var json = documents.ToJson();
         return json;
     }
