@@ -9,7 +9,11 @@ using MongoDB.Driver;
 using DBService.DataBase;
 using Microsoft.Extensions.Options;
 using EducationModel.Models;
+
+using documentIdNotFoundException.Exceptions;
+
 namespace resumeController.Controllers;
+
 
 [Route("deandra_spike-madden")]
 [ApiController]
@@ -61,6 +65,23 @@ public class ResumeController : ControllerBase
         var response = this.dbService.GetEducation();
         return Ok(response);
     }
+
+    [HttpGet("resume/education/{id}")]
+    public async Task<ActionResult<string>> SpecificEducation(int id)
+    {
+        try{
+        var response = await this.dbService.GetEducation(id);
+        return response;
+        }
+        catch (BsonSerializationException)
+        {
+            return Problem("Internal server error.");
+        }
+        catch (DocumentIdNotFoundException ex){
+            return NotFound(ex.Message);
+        }
+    }
+
 
     [HttpGet("resume/education/courses")]
     public ActionResult<string> Courses()
