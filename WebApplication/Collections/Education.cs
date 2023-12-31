@@ -11,6 +11,7 @@ public class EducationBuilder
     private readonly IMongoDatabase db;
     public IMongoCollection<Education> collection;
 
+
     public EducationBuilder(IMongoDatabase db)
     {
         this.db = db;
@@ -65,6 +66,11 @@ public class EducationBuilder
         {
             System.Console.WriteLine($"InvalidCastException: {e.Message}");
         }
+    }
+
+    public async Task<long> GetSize(){
+        var size = await this.collection.CountDocumentsAsync(_ => true);
+        return size;
     }
 }
 
