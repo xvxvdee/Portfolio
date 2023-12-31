@@ -11,6 +11,8 @@ using courseBuilder.Collections;
 using volunteerBuilder.Collections;
 using certificateBuilder.Collections;
 
+using documentIdNotFoundException.Exceptions;
+
 namespace DBService.DataBase;
 public class MongoDBService
 {
@@ -20,7 +22,6 @@ public class MongoDBService
     private CourseBuilder coursesCollection;
     private VolunteerBuilder volunterCollection;
     private CertificateBuilder certficateCollection;
-
     public MongoClient mongoClient;
     private IMongoDatabase db;
     public MongoDBService(IOptions<MongoDBSettings> dbSettings)//string connectionURI, string dbName)
@@ -33,7 +34,6 @@ public class MongoDBService
         this.coursesCollection = new(this.db);
         this.volunterCollection = new(this.db);
         this.certficateCollection = new(this.db);
-
     }
     public async Task CreateCollections()
     {
@@ -62,37 +62,59 @@ public class MongoDBService
         await this.certficateCollection.SetCertificateCollection();
 
     }
+
+    // Education Collection
     public string GetEducation()
     {
         var documents = this.educationCollection.collection.Find(new BsonDocument()).ToList();
         var json = documents.ToJson();
         return json;
     }
+    public async Task<string> GetEducation(int id)
+    {
+        var size = await this.educationCollection.GetSize();
+        if (id > size || id < 1)
+        {
+            throw new DocumentIdNotFoundException();
+        }
+        else
+        {
+            var document = await this.educationCollection.collection.Find(educationCollection => educationCollection.Id == id).FirstOrDefaultAsync();
+            var json = document.ToJson();
+            return json;
+        }
+    }
+
+    // Experience Collection
     public string GetExperience()
     {
         var documents = this.experienceCollection.collection.Find(new BsonDocument()).ToList();
         var json = documents.ToJson();
         return json;
     }
+
+    // Project Collection
     public string GetProject()
     {
         var documents = this.projectCollection.collection.Find(new BsonDocument()).ToList();
         var json = documents.ToJson();
         return json;
     }
-
+    // Courses Collection
     public string GetCourses()
     {
         var documents = this.coursesCollection.collection.Find(new BsonDocument()).ToList();
         var json = documents.ToJson();
         return json;
     }
+    // Volunteer Collection
     public string GetVolunteer()
     {
         var documents = this.volunterCollection.collection.Find(new BsonDocument()).ToList();
         var json = documents.ToJson();
         return json;
     }
+    // Certificates Collection
     public string GetCertificates()
     {
         var documents = this.certficateCollection.collection.Find(new BsonDocument()).ToList();
