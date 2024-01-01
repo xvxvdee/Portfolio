@@ -94,4 +94,25 @@ public class ExperienceBuilder
             System.Console.WriteLine($"InvalidCastException: {e.Message}");
         }
     }
+    public async Task<long> GetSize()
+    {
+        var size = await this.collection.CountDocumentsAsync(_ => true);
+        return size;
+    }
+
+    public async Task<List<string>> GetCompanies()
+    {
+        var documents = await this.collection.Find(_ => true).ToListAsync();
+        List<string> companies = documents.Select(documents => documents.Company).ToList();
+        return companies;
+    }
+    public async Task<List<string>> GetSkills()
+    {
+        var documents = await this.collection.Find(_ => true).ToListAsync();
+        List<List<string>?> skills = documents.Select(documents => documents.SkillsDeveloped).ToList();
+        List<string> skillsFlatten = skills.SelectMany(skill => skill).ToList();
+        return skillsFlatten.Distinct().ToList();
+    }
+
+
 }
