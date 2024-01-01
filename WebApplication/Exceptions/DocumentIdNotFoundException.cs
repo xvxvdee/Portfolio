@@ -1,5 +1,4 @@
 using System;
-
 namespace documentIdNotFoundException.Exceptions
 {
     public class DocumentIdNotFoundException : Exception
