@@ -1,11 +1,4 @@
-using MongoDB.Driver;
-using resumeController;
-using MongoDB.Bson;
-using Microsoft.Extensions.Configuration;
-using DBService.DataBase;
-using educationBuilder.Collections;
-using resumeController.Controllers;
-using EducationModel.Models;
+using System;
 
 // Configure User Secrets
 var secretBuilder = new ConfigurationBuilder()
@@ -32,4 +25,3 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
-
