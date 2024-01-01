@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using DBService.DataBase;
+using DBService.Service;
+
 using Microsoft.Extensions.Options;
 using EducationModel.Models;
 
 using documentIdNotFoundException.Exceptions;
+using companyNotFoundException.Exceptions;
+using skillNotFoundException.Exceptions;
+using techStackNotFoundException.Exceptions;
 
 namespace resumeController.Controllers;
 
@@ -69,19 +72,20 @@ public class ResumeController : ControllerBase
     [HttpGet("resume/education/{id}")]
     public async Task<ActionResult<string>> SpecificEducation(int id)
     {
-        try{
-        var response = await this.dbService.GetEducation(id);
-        return response;
+        try
+        {
+            var response = await this.dbService.GetEducation(id);
+            return Ok(response);
         }
         catch (BsonSerializationException)
         {
             return Problem("Internal server error.");
         }
-        catch (DocumentIdNotFoundException ex){
+        catch (DocumentIdNotFoundException ex)
+        {
             return NotFound(ex.Message);
         }
     }
-
 
     [HttpGet("resume/education/courses")]
     public ActionResult<string> Courses()
@@ -96,11 +100,106 @@ public class ResumeController : ControllerBase
         var response = this.dbService.GetExperience();
         return Ok(response);
     }
+
+    [HttpGet("resume/experience/{id}")]
+    public async Task<ActionResult<string>> Experience(int id)
+    {
+        try
+        {
+            var response = await this.dbService.GetExperience(id);
+            return Ok(response);
+        }
+        catch (BsonSerializationException ex)
+        {
+            Console.WriteLine(ex.Message);
+            return Problem("Internal server error.");
+        }
+        catch (DocumentIdNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
+    [HttpGet("resume/experience/skills/{skill}")]
+    public async Task<ActionResult<string>> ExperienceBySkill(string skill)
+    {
+        try
+        {
+            var response = await this.dbService.GetExperienceBySkill(skill);
+            return Ok(response);
+        }
+        catch (BsonSerializationException ex)
+        {
+            Console.WriteLine(ex.Message);
+            return Problem("Internal server error.");
+        }
+        catch (SkillNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
+
+    [HttpGet("resume/experience/company/{company}")]
+    public async Task<ActionResult<string>> ExperienceByCompany(string company)
+    {
+        try
+        {
+            var response = await this.dbService.GetExperienceByCompany(company);
+            return Ok(response);
+        }
+        catch (BsonSerializationException ex)
+        {
+            Console.WriteLine(ex.Message);
+            return Problem("Internal server error.");
+        }
+        catch (CompanyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
+
     [HttpGet("resume/projects")]
     public ActionResult<string> Projects()
     {
         var response = this.dbService.GetProject();
         return Ok(response);
+    }
+
+    [HttpGet("resume/projects/{id}")]
+    public async Task<ActionResult<string>> Projects(int id)
+    {
+        try
+        {
+            var response = await this.dbService.GetProject(id);
+            return Ok(response);
+        }
+        catch (BsonSerializationException ex)
+        {
+            Console.WriteLine(ex.Message);
+            return Problem("Internal server error.");
+        }
+        catch (DocumentIdNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
+    
+    [HttpGet("resume/projects/techstack/{techstack}")]
+    public async Task<ActionResult<string>> Projects(string techstack)
+    {
+        try
+        {
+            var response = await this.dbService.GetProject(techstack);
+            return Ok(response);
+        }
+        catch (BsonSerializationException ex)
+        {
+            Console.WriteLine(ex.Message);
+            return Problem("Internal server error.");
+        }
+        catch (TechStackNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 
     [HttpGet("resume/certificates")]
