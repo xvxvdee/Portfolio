@@ -1,9 +1,7 @@
 using MongoDB.Driver;
 using MongoDB.Bson;
-using System.Text.Json;
-using System.Collections.Generic;
-
 using Microsoft.Extensions.Options;
+using mongoDBSettings.Models;
 
 using educationBuilder.Collections;
 using experienceBuilder.Collections;
@@ -12,7 +10,6 @@ using courseBuilder.Collections;
 using volunteerBuilder.Collections;
 using certificateBuilder.Collections;
 
-using mongoDBToController.Serivce;
 using inputToMongoDB.Serivce;
 
 using documentIdNotFoundException.Exceptions;
@@ -22,20 +19,18 @@ using techStackNotFoundException.Exceptions;
 
 namespace DBService.Service;
 
+
 public class MongoDBService
 {
-    private EducationBuilder educationCollection;
-    private ExperienceBuilder experienceCollection;
-    private ProjectBuilder projectCollection;
-    private CourseBuilder coursesCollection;
-    private VolunteerBuilder volunterCollection;
-    private CertificateBuilder certficateCollection;
+    private readonly EducationBuilder educationCollection;
+    private readonly ExperienceBuilder experienceCollection;
+    private  readonly ProjectBuilder projectCollection;
+    private readonly CourseBuilder coursesCollection;
+    private readonly VolunteerBuilder volunterCollection;
+    private  readonly CertificateBuilder certficateCollection;
     public MongoClient mongoClient;
-    private IMongoDatabase db;
-
-    private InputToMongoDBService inputToMongoDBService = new();
-    private MongoDBToControllerService mongoDBToControllerService = new();
-
+    private readonly IMongoDatabase db;
+    private readonly InputToMongoDBService inputToMongoDBService = new();
     public MongoDBService(IOptions<MongoDBSettings> dbSettings)//string connectionURI, string dbName)
     {
         this.mongoClient = new MongoClient(dbSettings.Value.ConnectionString);
@@ -72,7 +67,6 @@ public class MongoDBService
         await this.coursesCollection.SetCoursesCollection();
         await this.volunterCollection.SetVolunteerCollection();
         await this.certficateCollection.SetCertificateCollection();
-
     }
 
     // Education Collection
@@ -85,7 +79,8 @@ public class MongoDBService
     public async Task<string> GetEducation(int id) // Return document based on Id
     {
         var size = await this.educationCollection.GetSize();
-        if (this.inputToMongoDBService.CheckIdRange(id, size))
+        var validation = this.inputToMongoDBService.CheckIdRange(id, size);
+        if (validation)
         {
             var document = await this.educationCollection.collection.Find(educationCollection => educationCollection.Id == id).FirstOrDefaultAsync();
             var json = document.ToJson();
@@ -107,7 +102,8 @@ public class MongoDBService
     public async Task<string> GetExperience(int id) // Return document based on Id
     {
         var size = await this.experienceCollection.GetSize();
-        if (this.inputToMongoDBService.CheckIdRange(id, size))
+        var validation = this.inputToMongoDBService.CheckIdRange(id, size);
+        if (validation)
         {
             var document = await this.experienceCollection.collection.Find(experienceCollection => experienceCollection.Id == id).FirstOrDefaultAsync();
             var json = document.ToJson();
@@ -122,10 +118,11 @@ public class MongoDBService
     public async Task<string> GetExperienceByCompany(string company)// Return document based on company
     {
         List<string> companies = await this.experienceCollection.GetCompanies();
-        if (this.inputToMongoDBService.CheckInputExistsProperty(companies,company))
-        //if (companies.Any(item => item.Contains(company, StringComparison.CurrentCultureIgnoreCase))) // Check is not exact match
+        var validation = this.inputToMongoDBService.CheckInputExistsProperty(companies, company);
+        if (validation)
         {
-            var documents = await this.experienceCollection.collection.Find(experienceCollection => experienceCollection.Company == company).ToListAsync();
+            var input = this.inputToMongoDBService.SerializeFragmentIdentifiers(company);
+            var documents = await this.experienceCollection.collection.Find(experienceCollection => experienceCollection.Company == input).ToListAsync();
             var json = documents.ToJson();
             return json;
         }
@@ -137,9 +134,11 @@ public class MongoDBService
     public async Task<string> GetExperienceBySkill(string skill) //Return document based on skill
     {
         List<string> skills = await this.experienceCollection.GetSkills();
-        if (this.inputToMongoDBService.CheckInputExistsProperty(skills,skill))
+        var validation = this.inputToMongoDBService.CheckInputExistsProperty(skills, skill);
+        if (validation)
         {
-            var documents = this.experienceCollection.collection.Find(experienceCollection => experienceCollection.SkillsDeveloped.Any(skillsDevelop => skillsDevelop.Contains(skill, StringComparison.CurrentCultureIgnoreCase))).ToList();
+            var input = this.inputToMongoDBService.SerializeFragmentIdentifiers(skill);
+            var documents = this.experienceCollection.collection.Find(experienceCollection => experienceCollection.SkillsDeveloped.Any(skillsDevelop => skillsDevelop.Contains(input, StringComparison.CurrentCultureIgnoreCase))).ToList();
             var json = documents.ToJson();
             return json;
         }
@@ -160,7 +159,8 @@ public class MongoDBService
     public async Task<string> GetProject(int id) // Return document based on Id
     {
         var size = await this.projectCollection.GetSize();
-        if (this.inputToMongoDBService.CheckIdRange(id,size))
+        var validation = this.inputToMongoDBService.CheckIdRange(id, size);
+        if (validation)
         {
             throw new DocumentIdNotFoundException();
         }
@@ -175,10 +175,11 @@ public class MongoDBService
     public async Task<string> GetProject(string techStack) // Return document based on techstack
     {
         List<string> entireTechStack = await this.projectCollection.GetTechStack();
-        if (this.inputToMongoDBService.CheckInputExistsProperty(entireTechStack,techStack))
-        //if (entireTechStack.Any(item => item.Contains(techStack, StringComparison.CurrentCultureIgnoreCase)))// Check is not exact match
+        var validation = this.inputToMongoDBService.CheckInputExistsProperty(entireTechStack, techStack);
+        if (validation)
         {
-            var documents = this.projectCollection.collection.Find(projectCollection => projectCollection.TechStack.Any(stack => stack.Contains(techStack, StringComparison.CurrentCultureIgnoreCase))).ToList();
+            var input = this.inputToMongoDBService.SerializeFragmentIdentifiers(techStack);
+            var documents = this.projectCollection.collection.Find(projectCollection => projectCollection.TechStack.Any(stack => stack.Contains(input, StringComparison.CurrentCultureIgnoreCase))).ToList();
             var json = documents.ToJson();
             return json;
         }
