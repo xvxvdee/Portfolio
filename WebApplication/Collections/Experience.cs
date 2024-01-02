@@ -1,20 +1,16 @@
 using MongoDB.Driver;
-
 using ExperienceModel.Models;
-
-using MongoDB.Bson;
 using System.Globalization;
 
 namespace experienceBuilder.Collections;
-
 public class ExperienceBuilder
 {
     private readonly IMongoDatabase db;
     public IMongoCollection<Experience> collection;
 
-    public ExperienceBuilder(IMongoDatabase db)
+    public ExperienceBuilder(IMongoDatabase database)
     {
-        this.db = db;
+        this.db = database;
         this.collection = db.GetCollection<Experience>("Experience");
 
         var indexExists = collection.Indexes.List().ToList().Any(idx => idx["name"] == "IdIndex");
@@ -26,7 +22,6 @@ public class ExperienceBuilder
             var indexName = collection.Indexes.CreateOne(indexModel);
         }
     }
-
     public async Task SetExperienceCollection()
     {
         Experience LaunchPop = new()
