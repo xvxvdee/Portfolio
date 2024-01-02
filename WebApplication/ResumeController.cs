@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using DBService.Service;
+using mongoDBSettings.Models;
 
 using Microsoft.Extensions.Options;
 using EducationModel.Models;
@@ -22,9 +19,7 @@ namespace resumeController.Controllers;
 [ApiController]
 public class ResumeController : ControllerBase
 {
-    private readonly IMongoCollection<Education> educationCollection;
     private MongoDBService dbService;
-
     public ResumeController(IOptions<MongoDBSettings> dbSettings)
     {
         this.dbService = new(dbSettings);
@@ -53,20 +48,38 @@ public class ResumeController : ControllerBase
     [HttpGet("about")]
     public ActionResult<string> About()
     {
-        return Ok("Hi! My name is...");
+        return Ok("Hello! My name is Deandra. I graduated from Toronto Metropolitan University (Toronto, Canada) with a Bachelor of Science in Computer Science and a French minor. Currently, I am working as a Software Engineer at Microsoft. One of my goals is to have a global impact through my work, reaching and influencing people all around the world, which I believe will bring me immense joy and satisfaction. In my free time, I enjoy spending time with friends, learning new languages, and working on side projects. I look forward to future collaborations.");
     }
 
     [HttpGet("contact")]
     public ActionResult<string> Contact()
     {
-        return Ok("List of contact information");
+        return Ok("Deandra.spikemadden@gmail.com\nhttps://www.linkedin.com/in/deandra-spike-madden/");
     }
 
     [HttpGet("resume/education")]
     public ActionResult<string> Education()
     {
-        var response = this.dbService.GetEducation();
-        return Ok(response);
+        try
+        {
+            var response = this.dbService.GetEducation();
+            return Ok(response);
+        }
+        catch (NullReferenceException ex)
+        {
+            System.Console.WriteLine($" Target = Education Collection: {ex.Message}");
+            return Problem("Internal Service Error");
+        }
+        catch (MongoConnectionException ex)
+        {
+            System.Console.WriteLine($" Target = Education Collection: {ex.Message}");
+            return Problem("Internal Service Error");
+        }
+        catch (BsonException ex)
+        {
+            System.Console.WriteLine($" Target = Education Collection: {ex.Message}");
+            return Problem("Internal Service Error.");
+        }
     }
 
     [HttpGet("resume/education/{id}")]
@@ -85,20 +98,66 @@ public class ResumeController : ControllerBase
         {
             return NotFound(ex.Message);
         }
+        catch (NullReferenceException ex)
+        {
+            System.Console.WriteLine($" Target = Education Collection: {ex.Message}");
+            return Problem("Internal Service Error");
+        }
+        catch (MongoConnectionException ex)
+        {
+            System.Console.WriteLine($" Target = Education Collection: {ex.Message}");
+            return Problem("Internal Service Error");
+        }
     }
 
     [HttpGet("resume/education/courses")]
     public ActionResult<string> Courses()
     {
-        var response = this.dbService.GetCourses();
-        return Ok(response);
+        try
+        {
+            var response = this.dbService.GetCourses();
+            return Ok(response);
+        }
+        catch (NullReferenceException ex)
+        {
+            System.Console.WriteLine($" Target = Courses Collection: {ex.Message}");
+            return Problem("Internal Service Error");
+        }
+        catch (MongoConnectionException ex)
+        {
+            System.Console.WriteLine($" Target = Courses Collection: {ex.Message}");
+            return Problem("Internal Service Error");
+        }
+        catch (BsonSerializationException ex)
+        {
+            System.Console.WriteLine($" Target = Courses Collection: {ex.Message}");
+            return Problem("Internal Service Error.");
+        }
     }
 
     [HttpGet("resume/experience")]
     public ActionResult<string> Experience()
     {
-        var response = this.dbService.GetExperience();
-        return Ok(response);
+        try
+        {
+            var response = this.dbService.GetExperience();
+            return Ok(response);
+        }
+        catch (NullReferenceException ex)
+        {
+            System.Console.WriteLine($" Target = Experience Collection: {ex.Message}");
+            return Problem("Internal Service Error");
+        }
+        catch (MongoConnectionException ex)
+        {
+            System.Console.WriteLine($" Target = Experience Collection: {ex.Message}");
+            return Problem("Internal Service Error");
+        }
+        catch (BsonSerializationException ex)
+        {
+            System.Console.WriteLine($" Target = Experience Collection: {ex.Message}");
+            return Problem("Internal Service Error.");
+        }
     }
 
     [HttpGet("resume/experience/{id}")]
@@ -118,6 +177,16 @@ public class ResumeController : ControllerBase
         {
             return NotFound(ex.Message);
         }
+        catch (NullReferenceException ex)
+        {
+            System.Console.WriteLine($" Target = Experience Collection: {ex.Message}");
+            return Problem("Internal Service Error");
+        }
+        catch (MongoConnectionException ex)
+        {
+            System.Console.WriteLine($" Target = Experience Collection: {ex.Message}");
+            return Problem("Internal Service Error");
+        }
     }
     [HttpGet("resume/experience/skills/{skill}")]
     public async Task<ActionResult<string>> ExperienceBySkill(string skill)
@@ -135,6 +204,16 @@ public class ResumeController : ControllerBase
         catch (SkillNotFoundException ex)
         {
             return NotFound(ex.Message);
+        }
+        catch (NullReferenceException ex)
+        {
+            System.Console.WriteLine($" Target = Experience Collection: {ex.Message}");
+            return Problem("Internal Service Error");
+        }
+        catch (MongoConnectionException ex)
+        {
+            System.Console.WriteLine($" Target = Experience Collection: {ex.Message}");
+            return Problem("Internal Service Error");
         }
     }
 
@@ -155,13 +234,42 @@ public class ResumeController : ControllerBase
         {
             return NotFound(ex.Message);
         }
+        catch (NullReferenceException ex)
+        {
+            System.Console.WriteLine($" Target = Experience Collection: {ex.Message}");
+            return Problem("Internal Service Error");
+        }
+        catch (MongoConnectionException ex)
+        {
+            System.Console.WriteLine($" Target = Experience Collection: {ex.Message}");
+            return Problem("Internal Service Error");
+        }
     }
 
     [HttpGet("resume/projects")]
     public ActionResult<string> Projects()
     {
-        var response = this.dbService.GetProject();
-        return Ok(response);
+        try
+        {
+            var response = this.dbService.GetProject();
+            return Ok(response);
+        }
+        catch (NullReferenceException ex)
+        {
+            System.Console.WriteLine($" Target = Project Collection: {ex.Message}");
+            return Problem("Internal Service Error");
+        }
+        catch (MongoConnectionException ex)
+        {
+            System.Console.WriteLine($" Target = Project Collection: {ex.Message}");
+            return Problem("Internal Service Error");
+        }
+        catch (BsonSerializationException ex)
+        {
+            System.Console.WriteLine($" Target = Project Collection: {ex.Message}");
+            return Problem("Internal Service Error.");
+        }
+
     }
 
     [HttpGet("resume/projects/{id}")]
@@ -181,8 +289,18 @@ public class ResumeController : ControllerBase
         {
             return NotFound(ex.Message);
         }
+        catch (NullReferenceException ex)
+        {
+            System.Console.WriteLine($" Target = Project Collection: {ex.Message}");
+            return Problem("Internal Service Error");
+        }
+        catch (MongoConnectionException ex)
+        {
+            System.Console.WriteLine($" Target = Project Collection: {ex.Message}");
+            return Problem("Internal Service Error");
+        }
     }
-    
+
     [HttpGet("resume/projects/techstack/{techstack}")]
     public async Task<ActionResult<string>> Projects(string techstack)
     {
@@ -200,20 +318,66 @@ public class ResumeController : ControllerBase
         {
             return NotFound(ex.Message);
         }
+        catch (NullReferenceException ex)
+        {
+            System.Console.WriteLine($" Target = Projects Collection: {ex.Message}");
+            return Problem("Internal Service Error");
+        }
+        catch (MongoConnectionException ex)
+        {
+            System.Console.WriteLine($" Target = Projects Collection: {ex.Message}");
+            return Problem("Internal Service Error");
+        }
+
     }
 
     [HttpGet("resume/certificates")]
     public ActionResult<string> Certificates()
     {
-        var response = this.dbService.GetCertificates();
-        return Ok(response);
+        try
+        {
+            var response = this.dbService.GetCertificates();
+            return Ok(response);
+        }
+        catch (NullReferenceException ex)
+        {
+            System.Console.WriteLine($" Target = Certificates Collection: {ex.Message}");
+            return Problem("Internal Service Error");
+        }
+        catch (MongoConnectionException ex)
+        {
+            System.Console.WriteLine($" Target = Certificates Collection: {ex.Message}");
+            return Problem("Internal Service Error");
+        }
+        catch (BsonSerializationException ex)
+        {
+            System.Console.WriteLine($" Target = Certificates Collection: {ex.Message}");
+            return Problem("Internal Service Error.");
+        }
     }
 
     [HttpGet("resume/volunteer")]
     public ActionResult<string> Volunteer()
     {
-        var response = this.dbService.GetVolunteer();
-        return Ok(response);
+        try
+        {
+            var response = this.dbService.GetVolunteer();
+            return Ok(response);
+        }
+        catch (NullReferenceException ex)
+        {
+            System.Console.WriteLine($" Target = Volunteer Collection: {ex.Message}");
+            return Problem("Internal Service Error");
+        }
+        catch (MongoConnectionException ex)
+        {
+            System.Console.WriteLine($" Target = Volunteer Collection: {ex.Message}");
+            return Problem("Internal Service Error");
+        }
+        catch (BsonSerializationException ex)
+        {
+            System.Console.WriteLine($" Target = Volunteer Collection: {ex.Message}");
+            return Problem("Internal Service Error.");
+        }
     }
-
 }
