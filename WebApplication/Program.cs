@@ -1,14 +1,4 @@
-using System;
-
-// Configure User Secrets
-var secretBuilder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .AddUserSecrets<Program>();
-
-var configuration = secretBuilder.Build();
-string mongoDBConnectionURI = configuration["mongoDBConnectionUri"];
-string mongoDBName = configuration["mongoDBDatabaseName"];
+using mongoDBSettings.Models;
 
 //Web App
 var builder = WebApplication.CreateBuilder(args);
