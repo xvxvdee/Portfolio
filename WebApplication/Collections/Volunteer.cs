@@ -82,8 +82,8 @@ public class VolunteerBuilder
         Volunteer ryersonDSC = new Volunteer
         {
             Id = 4,
-            Position = "Ryerson Developer Student Club",
-            Company = "",
+            Position = "Marketing Lead",
+            Company = "Ryerson Developer Student Club",
             Field = "Science and Technology",
             Description = "Organized and helped VP Marketing, assisted with logistics of Marketing, and handled the design of event posters and social media posts.",
             StartDate = DateTime.ParseExact("2020-09", "yyyy-MM", CultureInfo.InvariantCulture),
