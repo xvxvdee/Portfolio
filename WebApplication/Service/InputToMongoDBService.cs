@@ -9,7 +9,7 @@ public class InputToMongoDBService
 
     private readonly Regex alphanumericPattern = new Regex("^[a-zA-Z0-9]*$");
     public bool CheckIdRange(int id, long size)
-    { //Ensure int Id exists in colection
+    { //Ensure int Id exists in collection
         if (id > size || id < 1)
         {
             return false;
@@ -17,9 +17,9 @@ public class InputToMongoDBService
         return true;
     }
 
-    // Serialize inputs with fragmentidentifiers (Ex. # -> %23)
+    // Serialize inputs with fragment identifiers (Ex. # -> %23)
     public string SerializeFragmentIdentifiers(string input)
-    {
+    { //TODO: Ensure serialization happens in view
         StringBuilder res = new StringBuilder();
         List<string> inputCheck = input.Split("").ToList();
         foreach (string letter in inputCheck)
