@@ -172,7 +172,7 @@ public class MongoDBService
         }
     }
 
-    public async Task<string> GetProject(string techStack) // Return document based on techstack
+    public async Task<string> GetProject(string techStack) // Return document based on tech stack
     {
         List<string> entireTechStack = await this.projectCollection.GetTechStack();
         var validation = this.inputToMongoDBService.CheckInputExistsProperty(entireTechStack, techStack);
